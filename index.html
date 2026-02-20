@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculatrice d'Erlang B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            font-family: Arial, sans-serif;
+            color: #222222;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #f59e0b;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        h2 {
+            color: #f59e0b;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #fbbf24;
+            padding-bottom: 10px;
+        }
+
+        .three-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .column-card {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .info-section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #222222;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 5px rgba(251, 191, 36, 0.3);
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #fffbeb;
+            border-left: 4px solid #fbbf24;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result-label {
+            font-weight: 500;
+            color: #222222;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #fbbf24;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #f59e0b;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .error {
+            color: #dc2626;
+            background-color: #fee2e2;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .note {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .info-text {
+            white-space: pre-wrap;
+            font-family: Courier, monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #222222;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 1200px) {
+            .three-columns {
+                grid-template-columns: 1fr 1fr;
+                max-width: 900px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .three-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 10px;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculatrice d'Erlang B</h1>
+
+        <div class="three-columns">
+            <!-- Column 1: Nombre de Canaux -->
+            <div class="column-card">
+                <h2>Nombre de Canaux</h2>
+                <div id="error1" class="error"></div>
+                <div class="form-group">
+                    <label for="A1">Trafic (A) en Erlangs:</label>
+                    <input type="number" id="A1" value="10" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="Pr1">Probabilité de Perte (Pr):</label>
+                    <input type="number" id="Pr1" value="0.01" step="0.001" min="0" max="1">
+                </div>
+                <button onclick="calculateChannels()">Calculer</button>
+                <div id="result1" class="result">
+                    <div class="result-label">Nombre de Canaux N:</div>
+                    <div id="resultValue1" class="result-value"></div>
+                </div>
+                <div class="note">Note: Formule d'Erlang B<br>Pr = (A^N / N!) / Σ(A^k / k!)</div>
+            </div>
+
+            <!-- Column 2: Probabilité de Perte -->
+            <div class="column-card">
+                <h2>Probabilité de Perte</h2>
+                <div id="error2" class="error"></div>
+                <div class="form-group">
+                    <label for="A2">Trafic (A) en Erlangs:</label>
+                    <input type="number" id="A2" value="10" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="N2">Nombre de Canaux (N):</label>
+                    <input type="number" id="N2" value="15" step="1" min="1">
+                </div>
+                <button onclick="calculateLossProb()">Calculer</button>
+                <div id="result2" class="result">
+                    <div class="result-label">Probabilité de Perte (Pr):</div>
+                    <div id="resultValue2" class="result-value"></div>
+                    <div style="margin-top: 10px;">
+                        <div class="result-label">Pourcentage (%):</div>
+                        <div id="resultValue2Percent" class="result-value" style="font-size: 16px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 3: Trafic A -->
+            <div class="column-card">
+                <h2>Trafic A</h2>
+                <div id="error3" class="error"></div>
+                <div class="form-group">
+                    <label for="N3">Nombre de Canaux (N):</label>
+                    <input type="number" id="N3" value="15" step="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="Pr3">Probabilité de Perte (Pr):</label>
+                    <input type="number" id="Pr3" value="0.01" step="0.001" min="0" max="1">
+                </div>
+                <button onclick="calculateTrafficA()">Calculer</button>
+                <div id="result3" class="result">
+                    <div class="result-label">Trafic (A) en Erlangs:</div>
+                    <div id="resultValue3" class="result-value"></div>
+                </div>
+                <div class="note">Note: On inverse la formule d'Erlang B par recherche binaire pour trouver A</div>
+            </div>
+        </div>
+
+        <!-- Informations Section -->
+        <div class="info-section">
+            <h2>Informations</h2>
+            <div class="info-text">FORMULE D'ERLANG B
+
+Cette application calcule le nombre de canaux nécessaires en fonction
+du trafic et de la qualité de service (Grade of Service).
+
+PARAMÈTRES:
+• A (Trafic): Intensité du trafic en Erlangs
+  1 Erlang = 1 appel simultané continu
+  Exemple: 10 Erlangs = 10 appels simultanés moyens
+
+• Pr (Probabilité de Perte): Probabilité maximale d'appel perdu
+  Exemple: 0.01 = 1% d'appels perdus (Grade of Service: 0.01)
+  Valeurs typiques: 0.001 à 0.05
+
+• N (Nombre de canaux): Nombre minimum de canaux requis
+
+FORMULE:
+Pr = (A^N / N!) / (Σ A^k / k!) pour k=0 à N
+
+APPLICATIONS:
+• Dimensionnement de centrales téléphoniques
+• Planification de réseaux de communication
+• Calcul de capacité de lignes de transmission
+• Optimisation des ressources réseau</div>
+        </div>
+    </div>
+
+    <script>
+        function showError(tabNum, message) {
+            const errorDiv = document.getElementById(`error${tabNum}`);
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        function calculateChannels() {
+            const A = parseFloat(document.getElementById('A1').value);
+            const Pr = parseFloat(document.getElementById('Pr1').value);
+
+            if (isNaN(A) || isNaN(Pr)) {
+                showError(1, 'Veuillez entrer des valeurs numériques valides');
+                return;
+            }
+
+            fetch('/api/calculate_channels', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ A: A, Pr: Pr })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('resultValue1').textContent = data.result;
+                document.getElementById('result1').classList.add('show');
+            })
+            .catch(error => {
+                showError(1, error.message);
+            });
+        }
+
+        function calculateLossProb() {
+            const A = parseFloat(document.getElementById('A2').value);
+            const N = parseInt(document.getElementById('N2').value);
+
+            if (isNaN(A) || isNaN(N)) {
+                showError(2, 'Veuillez entrer des valeurs numériques valides');
+                return;
+            }
+
+            fetch('/api/calculate_loss_prob', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ A: A, N: N })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('resultValue2').textContent = data.Pr;
+                document.getElementById('resultValue2Percent').textContent = data.Pr_percent;
+                document.getElementById('result2').classList.add('show');
+            })
+            .catch(error => {
+                showError(2, error.message);
+            });
+        }
+
+        function calculateTrafficA() {
+            const N = parseInt(document.getElementById('N3').value);
+            const Pr = parseFloat(document.getElementById('Pr3').value);
+
+            if (isNaN(N) || isNaN(Pr)) {
+                showError(3, 'Veuillez entrer des valeurs numériques valides');
+                return;
+            }
+
+            fetch('/api/calculate_traffic_a', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ N: N, Pr: Pr })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('resultValue3').textContent = data.result;
+                document.getElementById('result3').classList.add('show');
+            })
+            .catch(error => {
+                showError(3, error.message);
+            });
+        }
+    </script>
+</body>
+</html>
